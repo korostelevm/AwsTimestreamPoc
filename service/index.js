@@ -1,6 +1,6 @@
 var constants = require('./constants')
 var moment = require('moment')
-
+var _ = require('lodash')
 
 
 const AWS = require("aws-sdk");
@@ -48,7 +48,7 @@ const writeRecords = async function (record) {
             'MeasureName': 'duration',
             'MeasureValue': record.duration,
             'MeasureValueType': 'DOUBLE',
-            'Time': moment(record.dt)._d.getTime().toString()
+            'Time': (moment(record.dt)._d.getTime()+_.random(100)).toString()
         };
         const records = [r];
      
@@ -66,10 +66,11 @@ const writeRecords = async function (record) {
 var run_query = async function(i){
     console.log(i)
     var t0 = Date.now();
-    var res = await q.getAllRows('SELECT * FROM "totry"."totry_table2" WHERE time > ago(6h) ORDER BY time DESC LIMIT 1000')
+    var qr = 'SELECT * FROM "totry"."totry_table2" WHERE time > ago(2h) ORDER BY time DESC LIMIT 10000'
+    console.log(qr)
+    var res = await q.getAllRows(qr)
     var t1 = Date.now();
-    console.log(`got ${res.Rows.length} rows`)
-    console.log(`Call to doSomething took ${t1 - t0} milliseconds.`);
+    console.log(`got ${res.Rows.length} rows, took ${t1 - t0} milliseconds`)
     return res
 }
 

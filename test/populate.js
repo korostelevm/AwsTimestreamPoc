@@ -2,7 +2,7 @@ const csv = require('csv-parser');
 const fs = require('fs')
 const path = require('path')
 var lambda = require('../service/index')
-
+var _ = require('lodash')
 var populate = async function(){
     return new Promise((resolve,reject)=>{
         fs.createReadStream(path.join(__dirname, 'trains.csv'))
@@ -14,7 +14,11 @@ var populate = async function(){
             console.log(row)
             row.duration = parseFloat(row.duration).toFixed(3).toString()
             try{
-                var res = await lambda.writeRecords(row);
+                
+                var res = await Promise.all(_.range(0,10).map(async i=>{
+                    return lambda.writeRecords(row);
+                }))
+
                 console.log(res)
                 return res
             }catch(e){
@@ -29,6 +33,7 @@ var populate = async function(){
 }
 
 (async function() {
+   
     let res = await populate;
     console.log(res);
 }());
