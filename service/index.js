@@ -1,4 +1,8 @@
 var constants = require('./constants')
+var moment = require('moment')
+
+
+
 const AWS = require("aws-sdk");
 AWS.config.update({
     region: constants.AWS_REGION,
@@ -16,35 +20,37 @@ const writeClient = new AWS.TimestreamWrite({
             agent: agent
         }
     });  
-
-
-const writeRecords = async function () {
+queryClient = new AWS.TimestreamQuery();
+var q = require('./query')
+/*
+{
+  idx: '361',
+  index: '1601712155.393100',
+  dt: '2020-10-03 08:02:35.393100023',
+  num_artifacts: '-3',
+  artifacts: "['DocumentProcessingVirtualAssistantInspectionApplication dba36550', 'ExtractionUI 0d15455e', 'RetrieveIntakeFilesService 73a26e42']",
+  state: 'fail',
+  duration: '-0.7128875'
+}
+*/
+const writeRecords = async function (record) {
         console.log("Writing records");
-        const currentTime = Date.now().toString(); // Unix time in milliseconds
+        // const currentTime = Date.now().toString(); // Unix time in milliseconds
      
         const dimensions = [
-            {'Name': 'region', 'Value': 'us-east-1'},
-            {'Name': 'az', 'Value': 'az1'},
-            {'Name': 'hostname', 'Value': 'host1'}
+            {'Name': 'artifacts', 'Value': record.artifacts},
+            {'Name': 'index', 'Value': record.index},
+            {'Name': 'state', 'Value': record.state}
         ];
      
-        const cpuUtilization = {
+        const r = {
             'Dimensions': dimensions,
-            'MeasureName': 'cpu_utilization',
-            'MeasureValue': '13.5',
+            'MeasureName': 'duration',
+            'MeasureValue': record.duration,
             'MeasureValueType': 'DOUBLE',
-            'Time': currentTime.toString()
+            'Time': moment(record.dt)._d.getTime().toString()
         };
-     
-        const memoryUtilization = {
-            'Dimensions': dimensions,
-            'MeasureName': 'memory_utilization',
-            'MeasureValue': '40',
-            'MeasureValueType': 'DOUBLE',
-            'Time': currentTime.toString()
-        };
-     
-        const records = [cpuUtilization, memoryUtilization];
+        const records = [r];
      
         const params = {
             DatabaseName: constants.DATABASE_NAME,
@@ -57,16 +63,28 @@ const writeRecords = async function () {
         return promise
     }
     
+var run_query = async function(i){
+    console.log(i)
+    var t0 = Date.now();
+    var res = await q.getAllRows('SELECT * FROM "totry"."totry_table2" WHERE time > ago(6h) ORDER BY time DESC LIMIT 1000')
+    var t1 = Date.now();
+    console.log(`got ${res.Rows.length} rows`)
+    console.log(`Call to doSomething took ${t1 - t0} milliseconds.`);
+    return res
+}
 
-    
 var handler = async function(event, context){
-    console.log(writeClient)
-    var res = await writeRecords()
-    console.log(res)
+    // console.log(writeClient)
+    for (var i=0; i<100; i++){
+        await run_query(i)
+    }
+
+
     return false
 }
 
 handler({},{})
 module.exports = {
+    writeRecords,
     handler
 }

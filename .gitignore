@@ -295,4 +295,4 @@ AskService.json
 .env.json
 ui/app.js
 ui/index.html
-*.zip
+*.ziptrains.csv
