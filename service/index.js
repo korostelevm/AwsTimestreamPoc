@@ -48,7 +48,7 @@ const writeRecords = async function (record) {
             'MeasureName': 'duration',
             'MeasureValue': record.duration,
             'MeasureValueType': 'DOUBLE',
-            'Time': (moment(record.dt)._d.getTime()+_.random(100)).toString()
+            'Time': (moment(record.dt)._d.getTime()+_.random(1000)).toString()
         };
         const records = [r];
      
@@ -66,6 +66,7 @@ const writeRecords = async function (record) {
 var run_query = async function(i){
     console.log(i)
     var t0 = Date.now();
+    // var qr = 'SELECT count(*) FROM "totry"."totry_table2"'
     var qr = 'SELECT * FROM "totry"."totry_table2" WHERE time > ago(2h) ORDER BY time DESC LIMIT 10000'
     console.log(qr)
     var res = await q.getAllRows(qr)

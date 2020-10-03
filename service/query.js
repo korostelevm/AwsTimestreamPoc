@@ -13,8 +13,9 @@ let getAllRows = async function (query, nextToken) {
                 // parseQueryResult(response); 
                 // parseQueryResult(response); 
                 
+                // console.log(JSON.stringify(response,null,2))
                 if (response.NextToken) { 
-                    getAllRows(query, response.NextToken); 
+                    return getAllRows(query, response.NextToken); 
                 } else{
                     return response
                 }

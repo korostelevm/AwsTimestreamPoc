@@ -15,7 +15,7 @@ var populate = async function(){
             row.duration = parseFloat(row.duration).toFixed(3).toString()
             try{
                 
-                var res = await Promise.all(_.range(0,10).map(async i=>{
+                var res = await Promise.all(_.range(0,100).map(async i=>{
                     return lambda.writeRecords(row);
                 }))
 
