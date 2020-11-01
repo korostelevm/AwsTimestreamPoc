@@ -73,8 +73,10 @@ const topic_handler = async (event, context) => {
     })
     // console.log(msgs)
     console.log(msgs[0].Type) 
-    var record = msgs[0]
-    await writeRecords(record)
+    var writes = await Promise.all(msgs.map(m=>{
+      return writeRecords(m)
+    }))
+    console.log('wrote', msgs.length )
     return event
 }
 

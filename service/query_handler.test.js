@@ -12,7 +12,8 @@ var payload = {
 
 (async ()=>{
  var res = await lambda(payload,{})
- console.log(util.inspect(res, {showHidden: false, depth: null, colors:true}))
+//  console.log(util.inspect(res, {showHidden: false, depth: null, colors:true}))
+ console.table(res)
 
 
 })()

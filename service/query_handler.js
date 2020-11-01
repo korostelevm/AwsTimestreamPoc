@@ -65,7 +65,8 @@ var run_query = async function(){
     var qr = `
                 SELECT * FROM "${process.env.DATABASE_NAME}"."${process.env.TABLE_NAME}" 
                 WHERE time > ago(2h) 
-                ORDER BY time DESC LIMIT 10000
+                ORDER BY time DESC
+                LIMIT 10000
              `
     console.log(qr)
     var res = await getAllRows(qr)
