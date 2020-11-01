@@ -57,6 +57,24 @@ Resources:
           MagneticStoreRetentionPeriodInDays: "730"
       TableName: !Join ["", ["TimestreamTable", !Ref Namespace]]
           
+  QueryLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Join ["", ["QueryLambda", !Ref Namespace]]
+      CodeUri: service/
+      Handler: query_handler.query_handler
+      Runtime: nodejs10.x
+      Tracing: Active
+      MemorySize: 3008
+      Timeout: 30
+      Policies:
+        - Statement:    
+            [{
+              "Effect": "Allow",
+              "Action": ["lambda:*","states:*","s3:*", "firehose:*","sns:*","timestream:*"],
+              "Resource": "*"
+            }]
+  
   TopicLambda:
     Type: AWS::Serverless::Function
     Properties:

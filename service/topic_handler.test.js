@@ -3,6 +3,7 @@ process.env.TABLE_NAME = 'TimestreamTabletimestream'
 
 var lambda = require('./topic_handler').topic_handler
 
+
 var payload = {
     "Records": [
         {

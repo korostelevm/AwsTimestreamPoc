@@ -1,10 +1,9 @@
 // http://raaviblog.com/how-to-stream-data-from-amazon-dynamodb-to-amazon-s3-using-aws-lambda-and-amazon-kinesis-firehose-and-analyse-using-microsoft-power-bi/
 
-const csv = require('csv-parser');
+// const csv = require('csv-parser');
 var faker = require('faker');
 const fs = require('fs');
 const _ = require('lodash');
-const write = require('./db').write;
 const delay = ms => new Promise(res => setTimeout(res, ms));
 // 17d3459c-536d-4576-be1b-00ed0b2f75d7
 const utils = require('./utils')
@@ -17,28 +16,28 @@ function titleCase(str) {
 }
 // var rows = []
 
-var tx = JSON.parse(fs.readFileSync('tx.json'))
-console.log(tx.length)
-var run = async function () {
-    for ( var i=0; i<10000;i++){
-      // var w = _.chunk(tx, 10).map((chunk) => {
-        // var dps = chunk.map(c => {
-        for ( c of tx){
-          console.log(i, c)
-          var res = await write([{
-            Type: c.Type,
-            TransactionId: 'aaa_'+i,
-            Fields: c.Fields,
-            Attributes: c.Attributes
-          }])
-          await delay(200);
-          console.log('res',res)
-        }
-      }
-      // console.log('done' + i)
-    // }
-    // console.log('done')
-};
+// var tx = JSON.parse(fs.readFileSync('tx.json'))
+// console.log(tx.length)
+// var run = async function () {
+//     for ( var i=0; i<10000;i++){
+//       // var w = _.chunk(tx, 10).map((chunk) => {
+//         // var dps = chunk.map(c => {
+//         for ( c of tx){
+//           console.log(i, c)
+//           var res = await write([{
+//             Type: c.Type,
+//             TransactionId: 'aaa_'+i,
+//             Fields: c.Fields,
+//             Attributes: c.Attributes
+//           }])
+//           await delay(200);
+//           console.log('res',res)
+//         }
+//       }
+//       // console.log('done' + i)
+//     // }
+//     // console.log('done')
+// };
 
 
 (async ()=>{
