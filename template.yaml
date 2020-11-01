@@ -1,0 +1,86 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+    CICD notifier
+    
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+# https://github.com/awslabs/serverless-application-model/blob/develop/samtranslator/policy_templates_data/policy_templates.json
+Globals:
+    Function:
+        Timeout: 30
+        Environment:
+          Variables:
+            DATABASE_NAME: !Join ["", ["TimestreamDb", !Ref Namespace]]
+            TABLE_NAME: !Join ["", ["TimestreamTable", !Ref Namespace]]
+        #     TimeseriesTable: !Ref TimeseriesTable
+            # AppBucket: "{{resolve:ssm:/account/app-bucket:1}}"
+            # InternalMicroservicesAPIKey: !Ref InternalMicroservicesAPIKey
+            # RememberUrl:
+            #   !Join ["", ["https://rememberv2.",!Ref Namespace, !Ref RootUrl, '/latest']]
+
+Parameters:
+    RootUrl:
+        Type: String
+        Default: '{{resolve:ssm:/account/root-url:1}}'
+    Namespace:
+        Type: String
+        Default: 'timestream'
+    BucketName:
+        Type: String
+        Default: ''
+    SlackSqsBatchSize:
+      Type: String
+      Default: '5'
+    MaxSqsRetries:
+      Type: String
+      Default: '5'
+    InternalMicroservicesAPIKey:
+      Type: String
+      Default: "{{resolve:ssm:/account/internal-api-key:1}}"
+    AccountName:
+      Type: String
+      Default: "{{resolve:ssm:/account/name:1}}"
+
+Resources:
+  TimestreamDb:
+      Type: AWS::Timestream::Database
+      Properties: 
+        DatabaseName: !Join ["", ["TimestreamDb", !Ref Namespace]]
+        # KmsKeyId: String
+
+  TimestreamTable:
+    Type: AWS::Timestream::Table
+    Properties: 
+      DatabaseName: !Ref TimestreamDb
+      RetentionProperties:
+          MemoryStoreRetentionPeriodInHours: "8766"
+          MagneticStoreRetentionPeriodInDays: "730"
+      TableName: !Join ["", ["TimestreamTable", !Ref Namespace]]
+          
+  TopicLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Join ["", ["TopicLambda", !Ref Namespace]]
+      CodeUri: service/
+      Handler: topic_handler.topic_handler
+      Runtime: nodejs10.x
+      Tracing: Active
+      MemorySize: 3008
+      Timeout: 30
+      Policies:
+        - Statement:    
+            [{
+              "Effect": "Allow",
+              "Action": ["lambda:*","states:*","s3:*", "firehose:*","sns:*","timestream:*"],
+              "Resource": "*"
+            }]
+      Events:
+        TopicEvent:
+          Type: SNS
+          Properties:
+            Topic: !Sub 'arn:aws:sns:${AWS::Region}:${AWS::AccountId}:DatapointStream'
+            SqsSubscription: True
+            # FilterPolicy:
+            #   datapoint_type: 
+            #     - CustomerTransaction
+  
