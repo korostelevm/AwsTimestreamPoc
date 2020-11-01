@@ -33,20 +33,30 @@ let getAllRows = async function (query, nextToken) {
             }); 
 } 
 var parse_results = function(results){
+    var measure_name_key_idx = results.ColumnInfo.map(c=>{return c.Name.includes('measure_name')}).indexOf(true)
+    var measure_value_key_idx= results.ColumnInfo.map(c=>{return c.Name.includes('measure_value')}).indexOf(true)
+    var measure_type = results.ColumnInfo[measure_value_key_idx].Name.split(':').slice(-1)
+    
     var res = results.Rows.map(r=>{
         var row = {}
         _.each(r.Data, (v,k)=>{
             var key = results.ColumnInfo[k].Name
             console.log(key)
-            if(key.includes('measure_')){
-
-            }else{
+            if(!key.includes('measure_')){
                 row[key] = v.ScalarValue
             }
         })
+        var measure_value = r.Data[measure_value_key_idx].ScalarValue
+        var measure_key = r.Data[measure_name_key_idx].ScalarValue
+        if(measure_type == 'double'  || measure_type == 'bigint'){
+            measure_value  = +measure_value
+        }
+        if(measure_type == 'boolean'){
+            measure_value  = (measure_value == 'true')
+        }
+        row[measure_key] = measure_value
         return row
     })
-
     return res
 }
 
