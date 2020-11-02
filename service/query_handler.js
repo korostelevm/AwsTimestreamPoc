@@ -41,7 +41,6 @@ var parse_results = function(results){
         var row = {}
         _.each(r.Data, (v,k)=>{
             var key = results.ColumnInfo[k].Name
-            console.log(key)
             if(!key.includes('measure_')){
                 row[key] = v.ScalarValue
             }
@@ -64,11 +63,10 @@ var run_query = async function(){
     var t0 = Date.now();
     var qr = `
                 SELECT * FROM "${process.env.DATABASE_NAME}"."${process.env.TABLE_NAME}" 
-                WHERE time > ago(2h) 
+                WHERE time > ago(24h) 
                 ORDER BY time DESC
                 LIMIT 10000
              `
-    console.log(qr)
     var res = await getAllRows(qr)
     var t1 = Date.now();
     console.log(`got ${res.Rows.length} rows, took ${t1 - t0} milliseconds`)
