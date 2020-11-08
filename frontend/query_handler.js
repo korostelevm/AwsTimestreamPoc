@@ -95,7 +95,6 @@ var received = async function(q){
         'tifpaths',
         'AIVAExecution',
         'top_classification_page',
-        '_documents_to_review',
         '_translation',
         '_extraction_output',
         '_classification_output',

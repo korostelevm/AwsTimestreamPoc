@@ -61,12 +61,10 @@ var parse_results = function(results){
 
 var run_query = async function(){
     var t0 = Date.now();
-    // WHERE TransactionId like '390a931c-150d-4f42-aa12-9f842f2f04ba' 
     var qr = `
     SELECT * FROM "${process.env.DATABASE_NAME}"."${process.env.TABLE_NAME}" 
-                WHERE time > ago(20m) 
+                WHERE TransactionId like '2dc74535-e846-493e-8733-42a62853178a' 
                 ORDER BY time ASC
-                LIMIT 10
              `
     var res = await getAllRows(qr)
     var t1 = Date.now();

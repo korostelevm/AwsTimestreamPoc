@@ -12,7 +12,8 @@
                 v-for="d of t.datapoints"
                     :key="d.ObjectId"
                     >
-            {{d.Type}}</b-list-group-item>
+            {{type_mappings[d.Type]}} <small>{{d.dt}}</small>
+             </b-list-group-item>
           </b-list-group>
       </div>
     </div>
@@ -27,6 +28,18 @@ export default {
     name: 'microfrontend',
     data() {
       return {
+        type_mappings:{
+          'TransactionReceived' : "Received Transaction",
+          '_skill_execution_arn' : "Skill Started",
+          'tifpaths' : "Convert Complete",
+          '_paginated_ocr' : "Ocr Complete",
+          'top_classification_page' : "Comprehend Classification Complete",
+          'AIVAExecution' : "File in Review",
+          'FinalClassificationDocuments' : "Classification Review Complete",
+          '_translation' : "Review Complete",
+          '_extraction_output' : "Extraction Sent to Customer",
+          '_classification_output' : "Classification Sent to Customer",
+        },
         messages:[],
         hours:6,
         error: false,
@@ -41,9 +54,11 @@ export default {
         
         _.each(by_tx,(v,t)=>{
           var tx = v.filter(d=>{return d.Type == 'TransactionReceived'})[0]
+          var datapoints = _.uniqBy( _.sortBy(v, d=>{return d.ts}).reverse(),d=>{
+              return d.Type}).reverse()
           by_tx[t] = {
              ...tx,
-            datapoints: _.sortBy(v, d=>{return d.ts})
+            datapoints: datapoints
           }
         })
         return by_tx
@@ -79,8 +94,8 @@ export default {
             .then(res => res.json()) 
             .then(data => {
               data = data.map(d=>{
-                d.dt = moment(d.ts).format('L h:mm:ss a z')
-                // d.dt = moment.tz(d.ts,moment.tz.guess()).format('L h:mm:ss a z')
+                // d.dt = moment(d.ts).format('L h:mm:ss a z')
+                d.dt = moment.tz(d.ts,moment.tz.guess()).format('L h:mm:ss a z')
                 return d
               })
               this.messages = data

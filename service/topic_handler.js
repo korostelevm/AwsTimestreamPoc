@@ -125,7 +125,7 @@ const topic_handler = async (event, context) => {
         return false
       }
     })
-    if(_.some(status_datapoints)){
+    if((status_datapoints.filter(s=>{return s}).length)){
       ws = new WebSocket(
         `wss://tx-status-wss.explore.heavywater.com?user_id=producer`
       );
@@ -139,7 +139,6 @@ const topic_handler = async (event, context) => {
           'tifpaths',
           'AIVAExecution',
           'top_classification_page',
-          '_documents_to_review',
           '_translation',
           '_extraction_output',
           '_classification_output',
