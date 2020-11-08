@@ -1,16 +1,47 @@
 {
-  "name": "awstimestreampoc",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "name": "aws-serverless-express-example",
+  "version": "2.1.1",
+  "description": "Example application for running a Node Express app on AWS Lambda using Amazon API Gateway.",
+  "main": "lambda.js",
+  "config": {
+    "bucket": "",
+    "env": "production",
+    "stage": ""
   },
-  "author": "",
-  "license": "ISC",
+  "scripts": {
+    "install:all": "npm i && concurrently \"cd service && npm i\"  \"cd vue && npm i\"",
+    "build:labmda": "sam build",
+    "build:microfrontend": "cd vue && npm run build &&  cp -r dist/* ../frontend/ ",
+    "start": "export env=$npm_config_env && concurrently \"npm run start:shell\"  \"npm run start:microfrontend\"  \"cd frontend && nodemon app.local.js  --ignore './data/'\"",
+    "start:shell": "sleep 3  && open http://localhost:1111/",
+    "start:microfrontend": "cd vue && node ./node_modules/@vue/cli-service/bin/vue-cli-service.js serve --port 1111",
+    "deploy": "./deploy.sh $npm_config_bucket"
+  },
+  "license": "Apache-2.0",
   "dependencies": {
-    "aws-sdk": "^2.766.0",
-    "csv-parser": "^2.3.3",
-    "jest": "^26.4.2"
+    "aws-serverless-express": "^3.3.8",
+    "axios": "^0.19.2",
+    "body-parser": "^1.17.1",
+    "compression": "^1.6.2",
+    "concurrently": "^5.1.0",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.3",
+    "dynamoose": "^2.2.1",
+    "express": "^4.15.2",
+    "express-session": "^1.17.1",
+    "faker": "^4.1.0",
+    "jest": "^26.1.0",
+    "lodash": "^4.17.15",
+    "moment": "^2.24.0",
+    "passport": "^0.4.1",
+    "request": "^2.88.2",
+    "slugify": "^1.4.0",
+    "tracer": "^1.1.2",
+    "webpack": "^4.39.3",
+    "webpack-cli": "^3.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2",
+    "webpack-cli": "^3.3.11"
   }
 }

@@ -1,5 +1,5 @@
 var moment = require('moment')
-
+const WebSocket = require("ws");
 const AWS = require("aws-sdk");
 AWS.config.update({
     region: process.env.AWS_REGION || 'us-east-1',
@@ -12,7 +12,7 @@ var agent, writeClient
 function getBinarySize(string) {
   return Buffer.byteLength(string, 'utf8')/1024;
 }
-
+var ws;
 const writeRecords = async function (record) {
   console.log("Writing records");
   // const currentTime = Date.now().toString(); // Unix time in milliseconds
@@ -63,7 +63,37 @@ const init = async function(){
 
       
   }
+
+  return 'done'
 }
+
+const waitForSocketConnection = (socket, callback) => {
+  return new Promise(function(resolve, reject) {
+    socket.onopen = function() {
+      console.log("socket connected");
+      resolve(socket);
+    };
+    socket.onerror = function(err) {
+      console.log(err)
+      reject(err);
+    };
+  });
+};
+
+
+const sendMessageToWs = (users, body, ws) => {
+  users.forEach(u => {
+    var msg = {
+      message: "sendmessage",
+      body: JSON.stringify(body),
+      destination: {type:'broadcast'}
+    };
+    msg = JSON.stringify(msg);
+    ws.send(msg);
+  });
+};
+
+
 const topic_handler = async (event, context) => {
     console.log("EVENT: ", JSON.stringify(event, null, 2));
     await init()
@@ -76,6 +106,49 @@ const topic_handler = async (event, context) => {
     var writes = await Promise.all(msgs.map(m=>{
       return writeRecords(m)
     }))
+    var status_datapoints = msgs.map(m=>{
+      if([
+        '_skill_execution_arn',
+        'TransactionReceived',
+        '_paginated_ocr',
+        'tifpaths',
+        'AIVAExecution',
+        'top_classification_page',
+        '_documents_to_review',
+        '_translation',
+        '_extraction_output',
+        '_classification_output',
+        'FinalClassificationDocuments',
+      ].includes(m.Type)){
+        return true
+      }else{
+        return false
+      }
+    })
+    if(_.some(status_datapoints)){
+      ws = new WebSocket(
+        `wss://tx-status-wss.explore.heavywater.com?user_id=producer`
+      );
+      await waitForSocketConnection(ws);
+      
+      msgs.map(m=>{
+        if([
+          '_skill_execution_arn',
+          'TransactionReceived',
+          '_paginated_ocr',
+          'tifpaths',
+          'AIVAExecution',
+          'top_classification_page',
+          '_documents_to_review',
+          '_translation',
+          '_extraction_output',
+          '_classification_output',
+          'FinalClassificationDocuments',
+        ].includes(m.Type)){
+          sendMessageToWs(['all'],m,ws)
+        }
+      })
+    }
     console.log('wrote', msgs.length )
     return event
 }

@@ -36,8 +36,8 @@ var parse_results = function(results){
     var measure_name_key_idx = results.ColumnInfo.map(c=>{return c.Name.includes('measure_name')}).indexOf(true)
     var measure_value_key_idx= results.ColumnInfo.map(c=>{return c.Name.includes('measure_value')}).indexOf(true)
     var measure_type = results.ColumnInfo[measure_value_key_idx].Name.split(':').slice(-1)
-    
     var res = results.Rows.map(r=>{
+        
         var row = {}
         _.each(r.Data, (v,k)=>{
             var key = results.ColumnInfo[k].Name
@@ -61,11 +61,12 @@ var parse_results = function(results){
 
 var run_query = async function(){
     var t0 = Date.now();
+    // WHERE TransactionId like '390a931c-150d-4f42-aa12-9f842f2f04ba' 
     var qr = `
-                SELECT * FROM "${process.env.DATABASE_NAME}"."${process.env.TABLE_NAME}" 
-                WHERE time > ago(24h) 
-                ORDER BY time DESC
-                LIMIT 10000
+    SELECT * FROM "${process.env.DATABASE_NAME}"."${process.env.TABLE_NAME}" 
+                WHERE time > ago(20m) 
+                ORDER BY time ASC
+                LIMIT 10
              `
     var res = await getAllRows(qr)
     var t1 = Date.now();

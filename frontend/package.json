@@ -1,0 +1,92 @@
+{
+  "name": "microfrontend",
+  "version": "1.0.0",
+  "description": "nodejs lambda handler to serve web application",
+  "main": "frontend.js",
+  "config": {
+    "empowerEnv": "https://empowerintegration.explore.heavywater.com/EmpowerWebApi/",
+    "empowerUsername": "EMPOWER",
+    "empowerPassword": "EMPOWER",
+    "port": 3000,
+    "callbackUrl": "http://localhost:3000/latest/login/callback",
+    "retrieveIntakeFilesUrl": "https://private-214a0-aivaintake.apiary-mock.com/minimalContentURL",
+    "documentUploadDomainName": "http://localhost:3000"
+  },
+  "scripts": {
+    "test": "jest",
+    "local": "node scripts/local",
+    "start": "env DocumentUploadDomainName=$npm_package_config_documentUploadDomainName CALLBACK_URL=$npm_package_config_callbackUrl RetrieveIntakeFilesUrl=$npm_package_config_retrieveIntakeFilesUrl EMPOWER_USERNAME=$npm_package_config_empowerUsername EMPOWER_PASSWORD=$npm_package_config_empowerPassword EMPOWER_ENV=$npm_package_config_empowerEnv PORT=$npm_package_config_port nodemon app.local.js localhost $npm_package_config_port"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HeavyWater-Solutions/DocumentUpload.git"
+  },
+  "keywords": [
+    "microfrontend",
+    "javascript",
+    "angular",
+    "review2.0"
+  ],
+  "author": "sagar.rajani@heavywater.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HeavyWater-Solutions/DocumentUpload/issues"
+  },
+  "homepage": "https://github.com/HeavyWater-Solutions/DocumentUpload#readme",
+  "husky": {
+    "hooks": {
+      "pre-commit": "echo hooks"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "npx prettier --write",
+      "eslint *.js --fix-dry-run"
+    ]
+  },
+  "dependencies": {
+    "aws-sdk": "^2.713.0",
+    "aws-serverless-express": "^3.3.8",
+    "axios": "^0.19.2",
+    "axios-retry": "^3.1.9",
+    "body-parser": "^1.18.2",
+    "btoa": "^1.2.1",
+    "compression": "^1.7.4",
+    "cookie-parser": "1.3.3",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.16.0",
+    "express-session": "^1.15.6",
+    "fs": "0.0.1-security",
+    "jsonwebtoken": "^8.5.1",
+    "jwks-rsa": "^1.11.0",
+    "moment-timezone": "^0.5.31",
+    "passport": "0.2.1",
+    "passport-ping-oauth2": "^1.0.0",
+    "path": "^0.12.7",
+    "rally": "^2.1.3",
+    "retry-axios": "^2.2.1",
+    "serverless-http": "^2.3.0",
+    "sha1": "^1.1.1",
+    "string-strip-html": "^6.0.5",
+    "tracer": "^1.1.3",
+    "zlib": "^1.0.5"
+  },
+  "devDependencies": {
+    "express-ws": "^4.0.0",
+    "babel-eslint": "^10.1.0",
+    "base64-url": "^2.3.3",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "fresh": "^0.5.2",
+    "husky": "^4.2.5",
+    "jest": "^26.1.0",
+    "lint-staged": "^10.2.11",
+    "negotiator": "^0.6.2",
+    "nodemon": "^2.0.4",
+    "prettier": "^2.1.2",
+    "qs": "^6.9.1",
+    "snyk": "^1.291.0"
+  }
+}
