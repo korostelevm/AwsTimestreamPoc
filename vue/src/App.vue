@@ -7,14 +7,15 @@
     >
     {{t.dt}} | {{tx_id}}
       <div>
-          <b-list-group horizontal style='color:black'>
-            <b-list-group-item
+          <div class='tx_events'>
+            <div class='tx_event'
                 v-for="d of t.datapoints"
                     :key="d.ObjectId"
                     >
-            {{type_mappings[d.Type]}} <small>{{d.dt}}</small>
-             </b-list-group-item>
-          </b-list-group>
+              <div class='tx_event_name'>{{type_mappings[d.Type]}}</div>
+              <div class='tx_event_dt'>{{d.dt}}</div>
+             </div>
+          </div>
       </div>
     </div>
   </div>
@@ -69,6 +70,7 @@ export default {
         console.log(m)
         if(m.body){
           m = JSON.parse(m.body)
+          
           m.dt = moment.tz(moment.utc(m.ts).format(),moment.tz.guess()).format('L h:mm:ss a z')
           this.messages.push(m)
         }
@@ -94,8 +96,8 @@ export default {
             .then(res => res.json()) 
             .then(data => {
               data = data.map(d=>{
-                // d.dt = moment(d.ts).format('L h:mm:ss a z')
-                d.dt = moment.tz(d.ts,moment.tz.guess()).format('L h:mm:ss a z')
+                console.log(moment.utc(d.ts).tz(moment.tz.guess()).format(' h:mm:ss a z'))
+                d.dt = moment.tz(moment.utc(d.ts),moment.tz.guess()).format('L h:mm:ss a z')
                 return d
               })
               this.messages = data
@@ -123,5 +125,11 @@ body {
 }
 .main{
   color: white;
+}
+.tx_events{
+  display: flex;
+}
+.tx_event_name, .tx_event_dt{
+  margin: 10px;
 }
 </style>
