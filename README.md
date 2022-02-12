@@ -1,7 +1,7 @@
 # AwsTimestreamPoc
 https://docs.aws.amazon.com/timestream/latest/developerguide/getting-started.node-js.sample-application.html
 
-sample query repsonse 
+sample query repsonse  
 ```js
 {
   QueryId: 'AEBQEAMX7LVHRSLTDP6QER2BQ34ITBHPOT2QPSKLJ5SP6NBAJOWZ6GQQC4XWAWA',
